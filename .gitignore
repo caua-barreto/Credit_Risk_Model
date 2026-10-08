@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data (large files)
+data/raw/
+data/processed/
+*.parquet
+*.csv
+!data/feature_definitions.csv
+
+# Kaggle
+.kaggle/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Artifacts
+artifacts/
+*.joblib
+*.pkl
+
+# Reports
+reports/

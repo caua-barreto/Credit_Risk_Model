@@ -1,0 +1,40 @@
+# =========================================================
+# INTEGRAÇÃO E DADOS KAGGLE
+# =========================================================
+kagglehub>=0.2.0        # Autenticação e download direto dos dados da competição
+pyarrow>=14.0.0         # Motor nativo para leitura dos ficheiros Parquet sem conflitos de memória
+
+# =========================================================
+# MANIPULAÇÃO E ANÁLISE DE DADOS
+# =========================================================
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0           # Essencial: teste KS de duas amostras (scipy.stats.ks_2samp)
+
+# =========================================================
+# VISUALIZAÇÃO DE DADOS
+# =========================================================
+matplotlib>=3.7.0       # Curvas ROC, PR e separação de scores
+seaborn>=0.12.0
+
+# =========================================================
+# MACHINE LEARNING, PIPELINE E BOOSTING
+# =========================================================
+scikit-learn>=1.3.0     # LogisticRegression, Pipeline, ColumnTransformer, métricas
+joblib>=1.3.0           # Serialização do pipeline para artifacts/model.joblib
+xgboost>=2.0.0          # Algoritmo de Gradient Boosting (pré-instalado no Colab)
+lightgbm>=4.0.0         # Algoritmo de Gradient Boosting (pré-instalado no Colab)
+catboost>=1.2.0         # Algoritmo de Gradient Boosting (necessita instalação)
+
+# =========================================================
+# OTIMIZAÇÃO DE HIPERPARÂMETROS E INTERPRETABILIDADE
+# =========================================================
+optuna>=3.0.0           # Tuning de hiperparâmetros (notebook de modelagem)
+shap>=0.44.0            # Extração da importância das features para negócio
+
+# =========================================================
+# AMBIENTE DE DESENVOLVIMENTO
+# =========================================================
+pyyaml>=6.0.0           # Leitura de configurações
+python-dotenv>=1.0.0    # Carregamento de variáveis de ambiente do .env
+ipykernel>=6.20.0       # Execução local no VS Code / Jupyter
