@@ -10,21 +10,24 @@ pyarrow>=14.0.0         # Motor nativo para leitura dos ficheiros Parquet sem co
 pandas>=2.0.0
 numpy>=1.24.0
 scipy>=1.10.0           # Essencial: teste KS de duas amostras (scipy.stats.ks_2samp)
+statsmodels>=0.14.0     # OBRIGATÓRIO: Cálculo de VIF (variance_inflation_factor e add_constant)
+jinja2>=3.1.0           # OBRIGATÓRIO: Renderização de estilos em tabelas pandas (df.style.format)
 
 # =========================================================
 # VISUALIZAÇÃO DE DADOS
 # =========================================================
 matplotlib>=3.7.0       # Curvas ROC, PR e separação de scores
 seaborn>=0.12.0
+plotly>=5.15.0          # Gráficos interativos e suporte aos plots nativos do Optuna (ex: plot_optimization_history)
 
 # =========================================================
 # MACHINE LEARNING, PIPELINE E BOOSTING
 # =========================================================
-scikit-learn>=1.3.0     # LogisticRegression, Pipeline, ColumnTransformer, métricas
+scikit-learn>=1.3.0     # LogisticRegression, Pipeline, ColumnTransformer, métricas, RobustScaler
 joblib>=1.3.0           # Serialização do pipeline para artifacts/model.joblib
-xgboost>=2.0.0          # Algoritmo de Gradient Boosting (pré-instalado no Colab)
-lightgbm>=4.0.0         # Algoritmo de Gradient Boosting (pré-instalado no Colab)
-catboost>=1.2.0         # Algoritmo de Gradient Boosting (necessita instalação)
+xgboost>=2.0.0          # Algoritmo de Gradient Boosting
+lightgbm>=4.0.0         # Algoritmo de Gradient Boosting
+catboost>=1.2.0         # Algoritmo de Gradient Boosting
 
 # =========================================================
 # OTIMIZAÇÃO DE HIPERPARÂMETROS E INTERPRETABILIDADE
@@ -33,8 +36,11 @@ optuna>=3.0.0           # Tuning de hiperparâmetros (notebook de modelagem)
 shap>=0.44.0            # Extração da importância das features para negócio
 
 # =========================================================
-# AMBIENTE DE DESENVOLVIMENTO
+# AMBIENTE DE DESENVOLVIMENTO E UTILITÁRIOS
 # =========================================================
 pyyaml>=6.0.0           # Leitura de configurações
 python-dotenv>=1.0.0    # Carregamento de variáveis de ambiente do .env
 ipykernel>=6.20.0       # Execução local no VS Code / Jupyter
+nbformat>=5.9.0         # Manipulação e execução segura de notebooks Jupyter
+tqdm>=4.65.0            # Barra de progresso para loops de agregações e processamento de arquivos
+tabulate>=0.9.0         # Impressão limpa de dataframes em logs e scripts de produção
