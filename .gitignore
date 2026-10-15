@@ -44,6 +44,10 @@ data/processed/*
 .DS_Store
 Thumbs.db
 
+# Arquivos legados de outros projetos / não utilizados
+utils.py
+utils_2.py
+
 # Artifacts - versionar arquivos do modelo oficial
 !artifacts/
 !artifacts/**

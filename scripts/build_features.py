@@ -63,8 +63,7 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import RobustScaler
 
-# Permite importar o utils_2.py (raiz do projeto) mesmo executando
-# ``python scripts/pipeline.py``.
+# Resolução da raiz do projeto para permitir execução como script.
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -219,7 +218,7 @@ def construir_master_table(
     Parameters
     ----------
     grupos_tabelas : dict
-        Output de ``utils_2.get_table_groups``.
+        Output de ``get_table_groups``.
     colunas_selecionadas : list[str], optional
         Default: ``COLUNAS_SELECIONADAS``.
     agg_map : dict, optional

@@ -30,8 +30,8 @@ from src.pipeline import (
     criar_features_linha,
     imputar_zero_logico,
     aplicar_ohe,
-    CreditRiskPipeline,
 )
+from scripts.build_features import CreditRiskPipeline
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("predict")
