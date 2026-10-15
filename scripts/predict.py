@@ -103,8 +103,8 @@ def main():
     parser.add_argument(
         "--model-name",
         type=str,
-        default="LightGBM_Opt_Lite",
-        help="Nome do modelo a ser utilizado para inferencia.",
+        default="modelo",
+        help="Nome do modelo a ser utilizado para inferencia (padrao: modelo).",
     )
     parser.add_argument(
         "--pipeline-path",

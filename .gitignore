@@ -25,11 +25,17 @@ env/
 .ipynb_checkpoints/
 
 # Data (large files)
-data/raw/
-data/processed/
+# Manter as pastas data/raw/ e data/processed/ versionadas via .gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Arquivos pesados de dados
 *.parquet
 *.csv
 !data/feature_definitions.csv
+!reports/**/*.csv
 
 # Kaggle
 .kaggle/
@@ -38,10 +44,6 @@ data/processed/
 .DS_Store
 Thumbs.db
 
-# Artifacts
-artifacts/
-*.joblib
-*.pkl
-
-# Reports
-reports/
+# Artifacts - versionar arquivos do modelo oficial
+!artifacts/
+!artifacts/**

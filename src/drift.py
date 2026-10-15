@@ -16,7 +16,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 FIGURES_DIR = BASE_DIR / 'reports' / 'figures'
 
 
-def teste_qui_quadrado_temporal(taxa_mensal_display: pd.DataFrame) -> Dict[str, float]:
+def teste_qui_quadrado_temporal(
+    taxa_mensal_display: pd.DataFrame,
+    col_taxa: str = 'Default Rate (%)',
+    col_volume: str = 'Volume',
+) -> Dict[str, float]:
     """
     Aplica teste qui-quadrado de independencia entre mes e target,
     e calcula V de Cramer como tamanho do efeito.
@@ -24,40 +28,60 @@ def teste_qui_quadrado_temporal(taxa_mensal_display: pd.DataFrame) -> Dict[str, 
     Parameters
     ----------
     taxa_mensal_display : pd.DataFrame
-        Tabela com colunas 'Default Rate (%)' e 'Volume' (index = mes).
+        Tabela mensal (index = mes) com a taxa de default e o volume.
+    col_taxa : str, default 'Default Rate (%)'
+        Nome da coluna com a taxa de default EM % (ex: 2.599 = 2.599%).
+    col_volume : str, default 'Volume'
+        Nome da coluna com o volume de observacoes do mes.
 
     Returns
     -------
     Dict[str, float]
         Dicionario com chi2, p_valor, gl, freq_esperada_min, cramers_v.
     """
+
+    # ---- Validacao amigavel de colunas ----
+    faltantes = [c for c in (col_taxa, col_volume)
+                 if c not in taxa_mensal_display.columns]
+    if faltantes:
+        raise KeyError(
+            f"Colunas ausentes em 'taxa_mensal_display': {faltantes}\n"
+            f"Colunas disponiveis: {taxa_mensal_display.columns.tolist()}\n"
+            f"Dica: chame com col_taxa='Default_Rate' se for o seu caso."
+        )
+
+    # ---- Construcao da tabela de contingencia ----
     contingencia = taxa_mensal_display.copy()
-    contingencia['taxa_decimal'] = contingencia['Default Rate (%)'] / 100
-    contingencia['eventos'] = (contingencia['taxa_decimal'] * contingencia['Volume']).round().astype(int)
-    contingencia['nao_eventos'] = contingencia['Volume'] - contingencia['eventos']
+    contingencia['taxa_decimal'] = contingencia[col_taxa] / 100
+    contingencia['eventos'] = (
+        contingencia['taxa_decimal'] * contingencia[col_volume]
+    ).round().astype(int)
+    contingencia['nao_eventos'] = (
+        contingencia[col_volume] - contingencia['eventos']
+    )
     tabela = contingencia[['eventos', 'nao_eventos']]
 
+    # ---- Teste qui-quadrado ----
     chi2, p, gl, expected = stats.chi2_contingency(tabela)
 
     n = tabela.values.sum()
     k = min(tabela.shape) - 1
-    cramers_v = np.sqrt(chi2 / (n * k))
+    cramers_v = np.sqrt(chi2 / (n * k)) if (n * k) > 0 else float('nan')
 
-    resultados = {
-        'chi2': chi2,
-        'p_valor': p,
-        'gl': gl,
-        'freq_esperada_min': expected.min(),
-        'cramers_v': cramers_v
-    }
-
+    # ---- Relatorio ----
     print(f"Qui-Quadrado:            {chi2:.2f}")
     print(f"Graus de Liberdade (gl): {gl}")
     print(f"P-valor:                 {p:.4e}")
     print(f"Frequencia esperada min: {expected.min():.2f}")
     print(f"V de Cramer:             {cramers_v:.4f}")
 
-    return resultados
+    return {
+        'chi2': chi2,
+        'p_valor': p,
+        'gl': gl,
+        'freq_esperada_min': expected.min(),
+        'cramers_v': cramers_v,
+    }
 
 
 # =============================================================================
@@ -168,10 +192,10 @@ def analisar_estabilidade_gini(X_val, y_val, meses, dicionario_modelos, filepath
         DataFrame ['MONTH', 'GINI'] e o vetor de probabilidades do ensemble.
     """
     probs_ensemble = np.zeros(len(X_val))
-    boostings = ['LightGBM_Opt', 'XGBoost_Opt', 'CatBoost_Opt']
-    for nome in boostings:
-        probs_ensemble += dicionario_modelos[nome].predict_proba(X_val)[:, 1]
-    probs_ensemble /= len(boostings)
+    modelos_avaliados = list(dicionario_modelos.keys())
+    for nome, modelo in dicionario_modelos.items():
+        probs_ensemble += modelo.predict_proba(X_val)[:, 1]
+    probs_ensemble /= max(len(modelos_avaliados), 1)
 
     df_eval = pd.DataFrame({'MONTH': meses.values, 'target': y_val.values, 'prob': probs_ensemble})
     resultados_mes = []

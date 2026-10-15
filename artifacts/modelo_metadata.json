@@ -1,0 +1,55 @@
+{
+  "nome_modelo": "modelo",
+  "classe": "sklearn.calibration.CalibratedClassifierCV",
+  "hiperparametros": {
+    "cv": "StratifiedKFold(n_splits=3, random_state=42, shuffle=True)",
+    "ensemble": "auto",
+    "estimator": "LGBMClassifier(class_weight='balanced', colsample_bytree=0.878224877398664,\n               learning_rate=0.04061350322079583, max_depth=9, n_estimators=168,\n               n_jobs=-1, num_leaves=51, random_state=42,\n               reg_alpha=6.032518729548217, reg_lambda=0.017424838010587338,\n               subsample=0.9486424242315596, verbosity=-1)",
+    "method": "isotonic",
+    "n_jobs": null
+  },
+  "features_utilizadas": [
+    "maxdpdlast24m_143P",
+    "avgdbddpdlast24m_3658932P",
+    "pctinstlsallpaidlate6d_3546844L",
+    "currdebt_22A",
+    "credamount_770A",
+    "commnoinclast6m_3546845L",
+    "applicationscnt_867L",
+    "applicationscnt_629L",
+    "numinstunpaidmaxest_4493212L",
+    "numinstpaid_4499208L",
+    "numactiverelcontr_750L",
+    "days30_165L",
+    "days180_256L",
+    "pmtnum_8L_sum",
+    "pmtnum_8L_max",
+    "dpdmax_139P_max",
+    "dpdmax_757P_max",
+    "credlmt_935A_max",
+    "monthlyinstlamount_332A_sum",
+    "Flag_Thin_File",
+    "Racio_Anuidade_Credito",
+    "Taxa_Utilizacao_Global",
+    "Ticket_Medio_Historico",
+    "Diferencial_Degradacao_Cliente",
+    "Racio_Falhas_Prestracoes",
+    "Frequencia_Rejeicoes_Mensal",
+    "Flag_Pandemia",
+    "Mes_do_Ano_5",
+    "Mes_do_Ano_6",
+    "Mes_do_Ano_8",
+    "Mes_do_Ano_10",
+    "Mes_do_Ano_11",
+    "Mes_do_Ano_12"
+  ],
+  "total_features": 33,
+  "tamanho_historico_treino": {
+    "linhas": 963493,
+    "taxa_inadimplencia": 0.032561731117921974
+  },
+  "tamanho_historico_teste": {
+    "linhas": 412926,
+    "taxa_inadimplencia": 0.03256273521163598
+  }
+}

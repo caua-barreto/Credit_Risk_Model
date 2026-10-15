@@ -499,10 +499,11 @@ def gerar_tabela_decis_ks(y_true, prob, n_decis=10, filepath: Optional[Union[str
     return tabela
 
 
-def simular_lucro_e_curva_tradeoff(y_true, prob, valores_credito, margem_lucro=0.15, threshold_otimizado=0.7425, filepath: Optional[Union[str, Path]] = None):
+def simular_lucro_e_curva_tradeoff(y_true, prob, valores_credito, margem_lucro=0.15, threshold_otimizado=0.7425, figsize=(12, 6), filepath: Optional[Union[str, Path]] = None):
     """
     Simula o lucro financeiro em OOT no threshold ótimo e gera o gráfico
-    de trade-off entre Taxa de Aprovação vs. Taxa de Risco da Carteira Aprovada.
+    de trade-off entre Taxa de Aprovação vs. Risco da Carteira Aprovada.
+    Estética executiva com threshold suavizado e paleta corporativa.
     """
     thresholds = np.linspace(0.01, 0.99, 100)
     y_true_arr = np.array(y_true)
@@ -512,6 +513,7 @@ def simular_lucro_e_curva_tradeoff(y_true, prob, valores_credito, margem_lucro=0
     riscos_carteira = []
     lucros = []
 
+    # 1. Loop de Simulação Financeira
     for t in thresholds:
         aprovados = prob < t
         n_aprovados = np.sum(aprovados)
@@ -523,57 +525,93 @@ def simular_lucro_e_curva_tradeoff(y_true, prob, valores_credito, margem_lucro=0
             perda_maus = np.sum(valores_arr[aprovados & (y_true_arr == 1)])
             lucro_total = lucro_bons - perda_maus
         else:
-            tx_aprov = 0.0
-            tx_risco = 0.0
-            lucro_total = 0.0
+            tx_aprov, tx_risco, lucro_total = 0.0, 0.0, 0.0
 
         taxas_aprovacao.append(tx_aprov)
         riscos_carteira.append(tx_risco)
         lucros.append(lucro_total)
 
-    # Ponto de operação no threshold selecionado
+    # 2. Ponto de operação no threshold selecionado
     aprov_op = prob < threshold_otimizado
     tx_aprov_op = (np.sum(aprov_op) / len(prob)) * 100
     tx_risco_op = (np.sum(aprov_op & (y_true_arr == 1)) / max(np.sum(aprov_op), 1)) * 100
     lucro_op = np.sum(valores_arr[aprov_op & (y_true_arr == 0)] * margem_lucro) - np.sum(valores_arr[aprov_op & (y_true_arr == 1)])
 
-    print('=' * 75)
-    print(f' SIMULAÇÃO DE RESULTADO FINANCEIRO NO OOT (Threshold = {threshold_otimizado:.4f}) ')
-    print('=' * 75)
+    # Console Output Executivo
+    print('=' * 80)
+    print(f' SIMULAÇÃO DE RESULTADO FINANCEIRO (Threshold = {threshold_otimizado:.4f}) ')
+    print('=' * 80)
     print(f' Taxa de Aprovação da Carteira : {tx_aprov_op:.2f}% ({np.sum(aprov_op):,} contratos)')
     print(f' Taxa de Default dos Aprovados : {tx_risco_op:.2f}%')
-    print(f' Lucro Financeiro Estimado     : R$ {lucro_op:,.2f}')
-    print('=' * 75)
+    print(f' Lucro Financeiro Estimado     : $ {lucro_op:,.2f}')
+    print('=' * 80)
 
-    # Gráfico de Trade-off
-    fig, ax1 = plt.subplots(figsize=(11, 5.5))
-    ax2 = ax1.twinx()
+    # 3. Plotagem Executiva
+    cor_aprov = '#95A5A6'    # Cinza para Aprovação
+    cor_risco = '#C00000'    # Vermelho para o Risco
+    cor_texto = '#333333'
+    cor_fundo = '#FFFFFF'
 
-    linha1 = ax1.plot(thresholds, taxas_aprovacao, color='#1B365D', linewidth=2.3, label='Taxa de Aprovação (%)')
-    linha2 = ax2.plot(thresholds, riscos_carteira, color='#8B0000', linewidth=2.3, linestyle='--', label='Default na Carteira Aprovada (%)')
+    fig, ax1 = plt.subplots(figsize=figsize)
+    fig.patch.set_facecolor(cor_fundo)
+    ax1.set_facecolor(cor_fundo)
+    ax2 = ax1.twinx()  # Cria eixo Y secundário
 
-    ax1.axvline(threshold_otimizado, color='#2c3e50', linestyle=':', linewidth=1.8,
-                label=f'Threshold Adotado ({threshold_otimizado:.4f})')
+    # Linhas de Negócio
+    linha1 = ax1.plot(thresholds, taxas_aprovacao, color=cor_aprov, linewidth=3.0, zorder=3, label='Aprovação de Crédito (%)')
+    linha2 = ax2.plot(thresholds, riscos_carteira, color=cor_risco, linewidth=3.0, zorder=3, label='Inadimplência Aprovada (%)')
 
-    ax1.set_xlabel('Ponto de Corte de Risco (Threshold)', fontsize=11, fontweight='bold')
-    ax1.set_ylabel('Taxa de Aprovação (%)', color='#1B365D', fontsize=11, fontweight='bold')
-    ax2.set_ylabel('Taxa de Inadimplência Aprovada (%)', color='#8B0000', fontsize=11, fontweight='bold')
-    ax1.tick_params(axis='y', labelcolor='#1B365D')
-    ax2.tick_params(axis='y', labelcolor='#8B0000')
+    # Threshold Suavizado (Transparente e Elegante)
+    linha_thresh = ax1.axvline(threshold_otimizado, color='#555555', linestyle='--', linewidth=1.5, alpha=0.6, zorder=2, label=f'Threshold ({threshold_otimizado:.4f})')
 
-    linhas = linha1 + linha2 + [ax1.get_lines()[-1]]
+    # Anotação Refinada focada no Lucro
+    max_y = ax1.get_ylim()[1]
+    ax1.annotate(
+        f'Lucro Estimado:\n$ {lucro_op:,.0f}',
+        xy=(threshold_otimizado, max_y * 0.45),
+        xytext=(threshold_otimizado + 0.05, max_y * 0.55),
+        arrowprops=dict(arrowstyle="-|>", color='#7F8C8D', lw=1.2, connectionstyle="arc3,rad=.2", alpha=0.8),
+        fontsize=10.5, fontweight='bold', color='#1A1A1A', alpha=0.9,
+        bbox=dict(boxstyle='round,pad=0.4', facecolor=cor_fundo, edgecolor='#E5E7E9', alpha=0.8),
+        zorder=5
+    )
+
+    # Formatação de Eixos
+    ax1.set_title('Trade-off Estratégico: Taxa de Concessão vs. Risco da Carteira', fontsize=14, fontweight='bold', color='#1A1A1A', pad=20, loc='left')
+    ax1.set_xlabel('Ponto de Corte de Risco (Score Threshold)', fontsize=11, color=cor_texto, labelpad=12)
+    
+    ax1.set_ylabel('Taxa de Aprovação (%)', color=cor_aprov, fontsize=11, fontweight='bold', labelpad=12)
+    ax2.set_ylabel('Taxa de Inadimplência Aprovada (%)', color=cor_risco, fontsize=11, fontweight='bold', labelpad=12)
+    
+    ax1.tick_params(axis='y', colors=cor_texto, labelsize=10)
+    ax2.tick_params(axis='y', colors=cor_texto, labelsize=10)
+    ax1.tick_params(axis='x', colors=cor_texto, labelsize=10)
+
+    # Grid e Legenda Despoluída (Jogada para baixo do gráfico para não obstruir as linhas)
+    ax1.grid(True, linestyle=':', alpha=0.6, color='#BDC3C7', zorder=0)
+    ax1.set_axisbelow(True)
+    
+    linhas = linha1 + linha2 + [linha_thresh]
     labels = [l.get_label() for l in linhas]
-    ax1.legend(linhas, labels, loc='center left', frameon=True, facecolor='#ffffff', edgecolor='#dcdcdc', fontsize=9.5)
+    ax1.legend(linhas, labels, loc='upper center', bbox_to_anchor=(0.5, -0.12), ncol=3, frameon=False, fontsize=10.5, labelcolor=cor_texto)
 
-    plt.title('Curva de Trade-off — Taxa de Concessão vs. Risco da Carteira OOT', fontsize=13, fontweight='bold', pad=14)
-    ax1.grid(True, linestyle='--', alpha=0.35)
+    # Decluttering (Spines)
+    sns.despine(ax=ax1, top=True, right=False)
+    sns.despine(ax=ax2, top=True, right=False)
+    for ax in [ax1, ax2]:
+        ax.spines['left'].set_color('#E5E7E9')
+        ax.spines['bottom'].set_color('#E5E7E9')
+        ax.spines['right'].set_color('#E5E7E9')
+        ax.spines['left'].set_linewidth(1.2)
+        ax.spines['bottom'].set_linewidth(1.2)
+        ax.spines['right'].set_linewidth(1.2)
+
     plt.tight_layout()
+    
     if filepath:
         save_path = Path(filepath)
-        if not save_path.is_absolute():
-            save_path = FIGURES_DIR / save_path
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(save_path, bbox_inches='tight', dpi=300)
+        plt.savefig(save_path, bbox_inches='tight', dpi=300, facecolor=fig.get_facecolor())
     plt.show()
 
     df_tradeoff = pd.DataFrame({
@@ -584,7 +622,6 @@ def simular_lucro_e_curva_tradeoff(y_true, prob, valores_credito, margem_lucro=0
     })
 
     return df_tradeoff, lucro_op
-
 # =============================================================================
 # 15. ENSEMBLE CUSTOMIZADO E EXPORTAÇÃO DE ARTEFATOS
 # =============================================================================

@@ -1,0 +1,34 @@
+Variável,PSI,KS,Status
+numinstpaid_4499208L,0.6233,0.3687, Crítico (Drift Severo)
+Racio_Falhas_Prestracoes,0.1307,0.0981, Alerta (Drift Moderado)
+pmtnum_8L_sum,0.0921,0.1310, Estável
+pmtnum_8L_max,0.0833,0.1262, Estável
+days180_256L,0.0758,0.1063, Estável
+applicationscnt_867L,0.0692,0.1119, Estável
+numinstunpaidmaxest_4493212L,0.0539,0.1598, Estável
+Racio_Anuidade_Credito,0.0350,0.0725, Estável
+credamount_770A,0.0343,0.0738, Estável
+Ticket_Medio_Historico,0.0309,0.0684, Estável
+credlmt_935A_max,0.0295,0.0706, Estável
+numactiverelcontr_750L,0.0122,0.0475, Estável
+dpdmax_757P_max,0.0115,0.0507, Estável
+maxdpdlast24m_143P,0.0099,0.0460, Estável
+monthlyinstlamount_332A_sum,0.0098,0.0310, Estável
+dpdmax_139P_max,0.0070,0.0292, Estável
+Frequencia_Rejeicoes_Mensal,0.0056,0.0296, Estável
+currdebt_22A,0.0053,0.0241, Estável
+Diferencial_Degradacao_Cliente,0.0048,0.0231, Estável
+pctinstlsallpaidlate6d_3546844L,0.0045,0.0513, Estável
+days30_165L,0.0044,0.0311, Estável
+avgdbddpdlast24m_3658932P,0.0043,0.0258, Estável
+Taxa_Utilizacao_Global,0.0005,0.0077, Estável
+commnoinclast6m_3546845L,0.0000,0.0000, Estável
+applicationscnt_629L,0.0000,0.0551, Estável
+Flag_Thin_File,0.0000,0.0016, Estável
+Flag_Pandemia,0.0000,0.8957, Estável
+Mes_do_Ano_5,0.0000,0.0681, Estável
+Mes_do_Ano_6,0.0000,0.1016, Estável
+Mes_do_Ano_8,0.0000,0.2667, Estável
+Mes_do_Ano_10,0.0000,0.0117, Estável
+Mes_do_Ano_11,0.0000,0.0840, Estável
+Mes_do_Ano_12,0.0000,0.0918, Estável

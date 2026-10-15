@@ -1358,3 +1358,110 @@ def auditar_anti_leakage(
     print("=" * 100)
 
     return df
+
+def imprimir_mapa_familias(
+    grupos_tabelas: Dict[str, List[Path]],
+    detalhar_arquivos: bool = True,
+    max_arquivos_por_familia: int = 6,
+) -> None:
+    """
+    Imprime, em formato texto legivel, o mapa de familias de tabelas
+    produzido por `get_table_groups`.
+
+    Agrupa visualmente por depth (0, 1, 2), marca familias que serao
+    puladas no merge (`SKIP_FAMILIES`) e lista as particoes de cada
+    familia (com compressao caso haja muitas).
+
+    Parameters
+    ----------
+    grupos_tabelas : Dict[str, List[Path]]
+        Mapeamento {nome_familia: [lista_de_paths]} retornado por
+        `get_table_groups`.
+    detalhar_arquivos : bool, default True
+        Se True, lista os nomes das particoes de cada familia.
+        Se False, mostra apenas o resumo em uma linha por familia.
+    max_arquivos_por_familia : int, default 6
+        Limite de particoes listadas por familia antes de comprimir
+        a saida com "... (+N arquivos)".
+
+    Returns
+    -------
+    None
+        A saida e feita via print (side effect).
+    """
+
+    # ---------- Helpers internos ----------
+    def _depth(familia: str) -> int:
+        if familia in ('train_base', 'train_static_0', 'train_static_cb_0'):
+            return 0
+        sufixo = familia.rsplit('_', 1)[-1]
+        return int(sufixo) if sufixo.isdigit() else 99
+
+    # ---------- Ordenacao ----------
+    familias_ordenadas = sorted(
+        grupos_tabelas.items(),
+        key=lambda kv: (_depth(kv[0]), kv[0]),
+    )
+
+    if not familias_ordenadas:
+        print("Nenhuma familia encontrada em 'grupos_tabelas'.")
+        return
+
+    largura_nome = max(len(f) for f, _ in familias_ordenadas)
+    linha = "=" * 78
+
+    # ---------- Cabecalho ----------
+    print(linha)
+    print(f" MAPA DE FAMILIAS DE TABELAS  ({len(grupos_tabelas)} familias)")
+    print(linha)
+
+    # ---------- Corpo ----------
+    depth_atual = None
+    for familia, arquivos in familias_ordenadas:
+        d = _depth(familia)
+
+        # Cabecalho de bloco por depth
+        if d != depth_atual:
+            depth_atual = d
+            rotulo = {
+                0: "DEPTH 0 (base + estaticos)",
+                1: "DEPTH 1",
+                2: "DEPTH 2",
+            }.get(d, "OUTRAS")
+            print(f"\n--- {rotulo} ---")
+
+        tag = " [SKIP]" if familia in SKIP_FAMILIES else ""
+        n = len(arquivos)
+
+        print(f"  {familia:<{largura_nome}}  | {n:>2} particao(oes){tag}")
+
+        if not detalhar_arquivos:
+            continue
+
+        nomes = sorted(a.name for a in arquivos)
+        if n <= max_arquivos_por_familia:
+            for nome in nomes:
+                print(f"      - {nome}")
+        else:
+            metade = max_arquivos_por_familia // 2
+            for nome in nomes[:metade]:
+                print(f"      - {nome}")
+            print(f"      ... (+{n - max_arquivos_por_familia + 1} arquivos)")
+            for nome in nomes[-(metade - 1):]:
+                print(f"      - {nome}")
+
+    # ---------- Resumo ----------
+    total_part = sum(len(v) for v in grupos_tabelas.values())
+    n_depth_0  = sum(1 for f in grupos_tabelas if _depth(f) == 0)
+    n_depth_1  = sum(1 for f in grupos_tabelas if _depth(f) == 1)
+    n_depth_2  = sum(1 for f in grupos_tabelas if _depth(f) == 2)
+
+    print("\n" + linha)
+    print(" RESUMO")
+    print(linha)
+    print(f"  Total de familias .......... {len(grupos_tabelas)}")
+    print(f"    - Depth 0 ................ {n_depth_0}")
+    print(f"    - Depth 1 ................ {n_depth_1}")
+    print(f"    - Depth 2 ................ {n_depth_2}")
+    print(f"  Total de particoes (arquivos) {total_part}")
+    print(linha)
