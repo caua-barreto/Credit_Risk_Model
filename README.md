@@ -123,25 +123,25 @@ Foi implementada **calibração isotônica** (`CalibratedClassifierCV` com regre
 
 ---
 
-## Resultados: Treino × OOT
+## Resultados: Teste × OOT
 
-A avaliação definitiva foi conduzida comparando o conjunto de Treino contra o conjunto **Out-of-Time (OOT)**, formado por safras estritamente futuras (`MONTH >= 202007`), operando com o **Threshold Congelado em 0.1189**:
+A avaliação definitiva foi conduzida comparando o conjunto de **Teste** (30% dos dados históricos, nunca vistos durante o treino) contra o conjunto **Out-of-Time (OOT)**, formado por safras estritamente futuras (`MONTH >= 202007`), operando com o **Threshold Congelado em 0.1189**:
 
-| Métrica | Treino | OOT | Δ | Δ (%) |
+| Métrica | Teste | OOT | Δ | Δ (%) |
 |---|---:|---:|---:|---:|
-| **Accuracy** | 0.9389 | 0.9389 | −0.0001 | −0.01% |
-| **Precision** | 0.1854 | 0.1311 | −0.0543 | −29.29% |
-| **Recall** | 0.2579 | 0.3364 | +0.0784 | **+30.42%** |
-| **F1-Score** | 0.2157 | 0.1886 | −0.0271 | −12.55% |
-| **ROC-AUC** | 0.8145 | **0.8255** | +0.0110 | **+1.36%** |
-| **PR-AUC** | 0.1482 | 0.1216 | −0.0266 | −17.97% |
-| **KS** | 0.4768 | **0.4940** | +0.0172 | **+3.61%** |
+| **Accuracy** | 0.9376 | 0.9389 | +0.0013 | +0.14% |
+| **Precision** | 0.1714 | 0.1311 | −0.0403 | −23.51% |
+| **Recall** | 0.2389 | 0.3364 | +0.0975 | **+40.82%** |
+| **F1-Score** | 0.1996 | 0.1886 | −0.0110 | −5.51% |
+| **ROC-AUC** | 0.7980 | **0.8255** | +0.0275 | **+3.45%** |
+| **PR-AUC** | 0.1307 | 0.1216 | −0.0091 | −6.96% |
+| **KS** | 0.4508 | **0.4940** | +0.0432 | **+9.59%** |
 
 > **Análise crítica dos resultados:**
 >
-> - **Capacidade discriminatória comprovada no OOT:** O ROC-AUC subiu para **0.8255** e o KS para **49.40%** em dados futuros. O modelo não apenas não degradou — melhorou.
-> - **Variação de Precision e PR-AUC:** A redução aparente de precisão (−29.29%) é explicada pela queda da taxa de default basal da carteira de **3.26% para 2.11%** no período OOT. Com menos inadimplentes na população, a proporção de falsos positivos aumenta mecanicamente. Ainda assim, o Recall subiu **+30.42%** — o modelo captura mais inadimplentes reais.
-> - **Target drift real:** A oscilação reflete mudanças macroeconômicas (pandemia COVID-19, auxílios governamentais), não uma falha do modelo. O ordenamento de risco permaneceu íntegro.
+> - **Capacidade discriminatória em forte ascensão no OOT:** O ROC-AUC saltou de **0.7980** (Teste) para **0.8255** (OOT), e o KS subiu de **45.08%** para **49.40%** — uma melhora real de +9.59% na separação entre classes. O modelo não apenas não degradou: ficou substancialmente melhor em dados futuros.
+> - **Recall explode no OOT (+40.82%):** A cobertura de inadimplentes passou de **23.89%** para **33.64%**. O modelo captura significativamente mais devedores reais nas safras futuras, comportamento atípico e desejável em produção.
+> - **Queda de Precision é Target Drift, não falha do modelo:** A precisão caiu de 0.1714 para 0.1311 (−23.51%) porque a taxa de default basal da carteira despencou de **3.26% para 2.11%** no período OOT (efeito pandemia e auxílios governamentais). Com menos inadimplentes na população, a proporção de falsos positivos sobe mecanicamente — mas o ordenamento de risco (ROC-AUC, KS) melhorou.
 
 ---
 
